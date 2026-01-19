@@ -1,5 +1,6 @@
 module "db" {
   source = "terraform-aws-modules/rds/aws"
+  # version = "~> 5.0"   # legacy
   identifier = local.resource_name #expense-dev
 
   engine            = "mysql"
@@ -9,10 +10,10 @@ module "db" {
 
   db_name  = "transactions" # AWS will create this schema automatically
   username = "root"
-  port     = "3306"
-  password = "ExpenseApp1"
-  manage_master_user_password = false
-
+  port     = 3306
+  # password = var.db_password
+  #manage_master_user_password = false
+  
   vpc_security_group_ids = [local.mysql_sg_id]
 
   # DB subnet group
@@ -64,3 +65,13 @@ module "db" {
     }
   )
 }
+
+resource "aws_route53_record" "rds-record" {
+  zone_id = var.zone_id
+  name = "mysql-${var.environment}.${var.domain_name}"
+  type = "CNAME"
+  ttl = 5 
+  records = [module.db.db_instance_address]
+}
+
+

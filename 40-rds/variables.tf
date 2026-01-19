@@ -14,4 +14,14 @@ variable "environment" {
   default = "dev"
 }
 
+variable "zone_id" {
+  default = "Z051115728XRIO19KLDP8"
+}
 
+variable "domain_name" {
+  default = "tridev.online"
+}
+
+variable "db_password" {
+  default = "ExpenseApp1"
+}
