@@ -48,6 +48,16 @@ module "app_alb_sg" {
   vpc_id         = data.aws_ssm_parameter.vpc_id.value
 }
 
+module "web_alb_sg" {
+  source         = "git::https://github.com/Trinath9395/terraform-sg-module.git?ref=main"
+  project_name   = var.project_name
+  environment    = var.environment
+  sg_name        = "web-alb"
+  common_tags    = var.common_tags
+  sg_description = "Created for Web ALB in expense"
+  vpc_id         = data.aws_ssm_parameter.vpc_id.value
+}
+
 module "vpn_sg" {
   source         = "git::https://github.com/Trinath9395/terraform-sg-module.git?ref=main"
   project_name   = var.project_name
@@ -174,4 +184,13 @@ resource "aws_security_group_rule" "backend_vpn_http" {
   protocol                 = "tcp"
   source_security_group_id = module.vpn_sg.sg_id
   security_group_id        = module.backend_sg.sg_id
+}
+
+resource "aws_security_group_rule" "web_alb_https" {
+  type              = "ingress"
+  from_port         = 443
+  to_port           = 443
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = module.web_alb_sg.sg_id
 }

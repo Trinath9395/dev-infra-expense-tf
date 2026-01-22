@@ -13,12 +13,12 @@ module "db" {
   port     = 3306
   # password = var.db_password
   #manage_master_user_password = false
-  
+
   vpc_security_group_ids = [local.mysql_sg_id]
 
   # DB subnet group
   create_db_subnet_group = false
-  db_subnet_group_name = local.database_subnet_group_name
+  db_subnet_group_name   = local.database_subnet_group_name
 
   # DB parameter group
   family = "mysql8.0"
@@ -61,16 +61,16 @@ module "db" {
   tags = merge(
     var.common_tags,
     {
-        Name = local.resource_name
+      Name = local.resource_name
     }
   )
 }
 
 resource "aws_route53_record" "rds-record" {
   zone_id = var.zone_id
-  name = "mysql-${var.environment}.${var.domain_name}"
-  type = "CNAME"
-  ttl = 5 
+  name    = "mysql-${var.environment}.${var.domain_name}"
+  type    = "CNAME"
+  ttl     = 5
   records = [module.db.db_instance_address]
 }
 

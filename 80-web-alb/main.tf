@@ -1,41 +1,42 @@
 module "alb" {
   source                     = "terraform-aws-modules/alb/aws"
-  internal                   = true
-  name                       = "${var.project_name}-${var.environment}-app-alb"
+  internal                   = false
+  name                       = "${var.project_name}-${var.environment}-web-alb"
   vpc_id                     = data.aws_ssm_parameter.vpc_id.value
-  subnets                    = local.private_subnet_ids
+  subnets                    = local.public_subnet_ids
   create_security_group      = false
-  security_groups            = [local.app_alb_sg_id]
+  security_groups            = [local.web_alb_sg_id]
   enable_deletion_protection = false
 
   tags = merge(
     var.common_tags,
     {
-      Name = "${var.project_name}-${var.environment}-app-alb"
+      Name = "${var.project_name}-${var.environment}-web-alb"
     }
   )
 }
 
-resource "aws_lb_listener" "http" {
+resource "aws_lb_listener" "https" {
   load_balancer_arn = module.alb.arn
-  port              = "80"
-  protocol          = "HTTP"
+  port              = "443"
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
+  certificate_arn   = local.web_alb_certificate_arn
 
   default_action {
     type = "fixed-response"
 
     fixed_response {
       content_type = "text/html"
-      message_body = "<h1>Hello I am from backend APP ALB</h1>"
+      message_body = "<h1>Hello I am from frontend Web ALB with HTTPS</h1>"
       status_code  = "200"
     }
   }
 }
 
-
-resource "aws_route53_record" "app_alb" {
+resource "aws_route53_record" "web_alb" {
   zone_id = var.zone_id
-  name    = "*.app-dev.${var.domain_name}"
+  name    = "*.${var.domain_name}"
   type    = "A"
 
   alias {
