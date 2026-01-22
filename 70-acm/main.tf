@@ -5,7 +5,7 @@ resource "aws_acm_certificate" "expense" {
   tags = merge(
     var.common_tags,
     {
-        Name = "${var.project_name}-${var.environment}"
+      Name = "${var.project_name}-${var.environment}"
     }
   )
 }
@@ -28,6 +28,6 @@ resource "aws_route53_record" "expense" {
 }
 
 resource "aws_acm_certificate_validation" "expense" {
-  certificate_arn = aws_acm_certificate.expense.arn
+  certificate_arn         = aws_acm_certificate.expense.arn
   validation_record_fqdns = [for record in aws_route53_record.expense : record.fqdn]
 }
