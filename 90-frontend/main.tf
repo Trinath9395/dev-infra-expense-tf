@@ -61,10 +61,10 @@ resource "null_resource" "frontend_delete" {
 }
 
 resource "aws_lb_target_group" "frontend" {
-  name     = local.resource_name
-  port     = 80
-  protocol = "HTTP"
-  vpc_id   = local.vpc_id
+  name                 = local.resource_name
+  port                 = 80
+  protocol             = "HTTP"
+  vpc_id               = local.vpc_id
   deregistration_delay = 60
 
   health_check {
@@ -104,7 +104,7 @@ resource "aws_autoscaling_group" "frontend" {
   health_check_type         = "ELB"
   desired_capacity          = 1
   target_group_arns         = [aws_lb_target_group.frontend.arn]
-  
+
   launch_template {
     id      = aws_launch_template.frontend.id
     version = "$Latest"
