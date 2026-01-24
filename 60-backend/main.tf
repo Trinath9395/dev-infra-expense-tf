@@ -61,10 +61,10 @@ resource "null_resource" "backend_delete" {
 }
 
 resource "aws_lb_target_group" "backend" {
-  name     = local.resource_name
-  port     = 8080
-  protocol = "HTTP"
-  vpc_id   = local.vpc_id
+  name                 = local.resource_name
+  port                 = 8080
+  protocol             = "HTTP"
+  vpc_id               = local.vpc_id
   deregistration_delay = 60
 
   health_check {
