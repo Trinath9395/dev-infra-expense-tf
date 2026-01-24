@@ -31,7 +31,7 @@ resource "null_resource" "frontend" {
   provisioner "remote-exec" {
     inline = [
       "chmod +x /tmp/frontend.sh",
-      "sudo sh /tmp/backned.sh ${var.environment}"
+      "sudo sh /tmp/frontend.sh ${var.environment}"
     ]
   }
 }
@@ -103,17 +103,19 @@ resource "aws_autoscaling_group" "frontend" {
   health_check_type         = "ELB"
   desired_capacity          = 1
   target_group_arns         = [aws_lb_target_group.frontend.arn]
+  
   launch_template {
     id      = aws_launch_template.frontend.id
     version = "$Latest"
   }
+  
   vpc_zone_identifier = local.public_subnet_ids
   instance_refresh {
     strategy = "Rolling"
     preferences {
       min_healthy_percentage = 60
     }
-    triggers = ["launch_template"]
+    #triggers = ["launch_template"]
   }
 
   tag {
@@ -144,6 +146,7 @@ resource "aws_autoscaling_policy" "frontend" {
   name                   = "${local.resource_name}-frontend"
   policy_type            = "TargetTrackingScaling"
   autoscaling_group_name = aws_autoscaling_group.frontend.name
+
   target_tracking_configuration {
     predefined_metric_specification {
       predefined_metric_type = "ASGAverageCPUUtilization"
