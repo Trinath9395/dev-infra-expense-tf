@@ -140,6 +140,19 @@ resource "aws_autoscaling_group" "frontend" {
 
 }
 
+resource "aws_autoscaling_policy" "frontend" {
+  name                   = "${local.resource_name}-frontend"
+  policy_type            = "TargetTrackingScaling"
+  autoscaling_group_name = aws_autoscaling_group.frontend.name
+  target_tracking_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ASGAverageCPUUtilization"
+    }
+
+    target_value = 70.0
+  }
+}
+
 resource "aws_lb_listener_rule" "frontend" {
   listener_arn = data.aws_ssm_parameter.web_alb_listner_arn.value
   priority     = 10
