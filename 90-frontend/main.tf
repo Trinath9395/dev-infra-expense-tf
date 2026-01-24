@@ -141,7 +141,7 @@ resource "aws_autoscaling_group" "frontend" {
 }
 
 resource "aws_lb_listener_rule" "frontend" {
-  listener_arn = data.aws_ssm_parameter.app_alb_listner_arn.value
+  listener_arn = data.aws_ssm_parameter.web_alb_listner_arn.value
   priority     = 10
 
   action {
